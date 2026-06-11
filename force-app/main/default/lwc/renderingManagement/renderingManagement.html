@@ -1,0 +1,511 @@
+<template>
+    <div>
+        <template if:true={showRouterList}>
+            <div class="container">
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+
+                    <div class="logo-container">
+                        <span class="custom-logo">🔀 RaagviTech</span>
+                    </div>
+
+                    <nav class="slds-nav-vertical" aria-label="Sub navigation">
+
+                        <div class="slds-nav-vertical__section">
+
+                            <ul>
+
+                                <li class="slds-nav-vertical__item slds-is-active">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        📋 Routers
+                                    </a>
+                                </li>
+
+                                <li class="slds-nav-vertical__item">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        👤 Users
+                                    </a>
+                                </li>
+
+                                <li class="slds-nav-vertical__item">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        📅 Schedules
+                                    </a>
+                                </li>
+
+                                <li class="slds-nav-vertical__item">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        🗺️ Territories
+                                    </a>
+                                </li>
+
+                                <li class="slds-nav-vertical__item">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        🛠️ Skills
+                                    </a>
+                                </li>
+
+                                <li class="slds-nav-vertical__item">
+                                    <a href="#" class="slds-nav-vertical__action">
+                                        ⚙️ Admin
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </nav>
+
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-body">
+
+                    <!-- Header -->
+                    <div class="header-container">
+
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                            <h1 class="title-text">
+                                Routers
+                            </h1>
+
+                            <lightning-button label="New Router" icon-name="utility:add" variant="brand"
+                                onclick={handleNewRouter} class="custom-brand-btn">
+                            </lightning-button>
+
+                        </div>
+
+                    </div>
+
+                    <template if:true={isModalOpen}>
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <header class="slds-modal__header">
+                                    <button
+                                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                        title="Close" onclick={closeModal}>
+                                        <lightning-icon icon-name="utility:close" alternative-text="close"
+                                            size="small"></lightning-icon>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Router
+                                    </h2>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <div class="slds-grid slds-wrap slds-gutters_small">
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <lightning-input name="routerName" label="Router Name" value={routerName}
+                                                onchange={handleInputChange} required>
+                                            </lightning-input>
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <lightning-combobox name="selectedObject" label="Object"
+                                                value={selectedObject} options={objectOptions}
+                                                onchange={handleInputChange} required>
+                                            </lightning-combobox>
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <lightning-combobox name="assignedField" label="Field to Assign"
+                                                value={assignedField} options={assignFieldOptions}
+                                                onchange={handleInputChange} required>
+                                            </lightning-combobox>
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <lightning-combobox name="evaluationOrder" label="Evaluation Order"
+                                                value={evaluationOrder} options={evaluationOrderOptions}
+                                                onchange={handleInputChange} required>
+                                            </lightning-combobox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <button class="slds-button slds-button_neutral" onclick={closeModal}
+                                        title="Cancel">Cancel</button>
+                                    <button class="slds-button slds-button_brand" onclick={handleCreateRouter}
+                                        title="Create Router">Create Router</button>
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </template>
+
+
+                    <!-- Tabs -->
+                    <div class="slds-p-horizontal_medium slds-p-top_medium">
+
+                        <lightning-tabset variant="scoped" active-tab-value="lead">
+
+                            <lightning-tab label="Lead Owner" value="lead" onactive={handleTabChange}>
+                            </lightning-tab>
+
+                            <lightning-tab label="Account Owner" value="account" onactive={handleTabChange}>
+                            </lightning-tab>
+
+                            <lightning-tab label="Case Owner" value="case" onactive={handleTabChange}>
+                            </lightning-tab>
+
+                        </lightning-tabset>
+
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="sub-menu-bar">
+
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                            <div class="slds-grid slds-grid_vertical-align-center">
+
+                                <span class="text-muted slds-m-right_x-small">
+                                    Display
+                                </span>
+
+                                <lightning-combobox name="pageSize" value={pageSize} options={pageSizeOptions}
+                                    onchange={handlePageSizeChange} variant="label-hidden" class="compact-dropdown">
+                                </lightning-combobox>
+
+                                <span class="text-muted slds-m-left_x-small">
+                                    per page 🔄
+                                </span>
+
+                            </div>
+
+                            <div class="slds-grid slds-grid_vertical-align-center text-muted">
+
+                                <span>
+                                    1 - {totalRecords} of {totalRecords}
+                                </span>
+
+                                <lightning-button-icon icon-name="utility:chevronleft" variant="bare"
+                                    class="slds-m-left_small">
+                                </lightning-button-icon>
+
+                                <lightning-button-icon icon-name="utility:chevronright" variant="bare"
+                                    class="slds-m-left_x-small">
+                                </lightning-button-icon>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-wrapper">
+
+                        <lightning-datatable key-field="id" data={routerData} columns={columns} hide-checkbox-column
+                            show-row-number-column="false" onrowaction={handleRowAction}>
+                        </lightning-datatable>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </template>
+
+        <template if:true={showAssignmentPage}>
+            <div class="assignment-page slds-p-around_medium">
+                <div class="assignment-card-container">
+
+                    <lightning-card title="Assignment Method">
+
+                        <div class="slds-grid slds-wrap">
+
+                            <template for:each={assignmentMethods} for:item="method">
+                                <div key={method.id}
+                                    class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-p-around_small"
+                                    data-id={method.id} onclick={handleCardClick}>
+
+                                    <div class="slds-box card-box">
+
+                                        <div class="assignment-page slds-p-around_medium">
+                                            <div class="card-header">
+
+                                                <div class={method.iconClass}>
+                                                    <lightning-icon icon-name={method.icon} size="x-small"
+                                                        variant="inverse" alternative-text={method.title}>
+                                                    </lightning-icon>
+                                                </div>
+                                                <span class="method-title">{method.title}</span>
+
+                                            </div>
+
+                                            <p>{method.description}</p>
+
+                                            <a href="javascript:void(0)" onclick={handleCardClick} data-id={method.id}>
+                                                Learn more
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </template>
+
+                        </div>
+
+                    </lightning-card>
+                </div>
+
+            </div>
+            <div data-section="assignment">
+                <div class="assignment-page slds-p-around_medium">
+
+                    <template if:true={cardSelected}>
+
+                        <div class="assignment-card-container">
+                            <!-- <div>Router Members content</div> -->
+                            <lightning-card>
+                                <div class="card-content">
+                                
+
+                                    <div class="slds-p-around_medium slds-border_bottom">
+                                        <div class="slds-text-heading_small slds-text-title_bold">
+                                            What to Assign
+                                        </div>
+                                    </div>
+
+                                    <!-- QUEUE SECTION -->
+                                    <div class="slds-p-around_medium">
+
+                                        <div class="slds-text-title_bold slds-m-bottom_x-small">
+                                            Connect Queue(s)
+                                        </div>
+
+                                        <p class="slds-text-color_weak slds-m-bottom_medium">
+                                            This router will assign leads that belong to the queue(s) or user(s) you
+                                            select
+                                            below.
+                                        </p>
+
+                                        <template for:each={queueRows} for:item="row" for:index="index">
+
+                                            <div key={row.id}
+                                                class="slds-grid slds-m-left_padding slds-gutters_x-small">
+
+                                                <!-- Type -->
+                                                <div class="slds-col slds-size_1-of-12" style="padding-right:4px;">
+                                                    <lightning-combobox label="Type" value={row.type} data-id={row.id}
+                                                        options={queueOptions} onchange={handleTypeChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <!-- Search -->
+                                                <div class="slds-col slds-size_2-of-12" style="padding-left:4px;">
+
+                                                    <div class="lookup-container">
+
+                                                        <lightning-input type="search" label="Search" data-id={row.id}
+                                                            value={row.searchKey} onchange={handleSearchChange}>
+                                                        </lightning-input>
+
+                                                        <template if:true={row.results.length}>
+                                                            <div class="lookup-dropdown">
+
+                                                                <template for:each={row.results} for:item="item">
+
+                                                                    <div key={item.value} class="lookup-item"
+                                                                        data-id={row.id} data-value={item.value}
+                                                                        data-label={item.label} onclick={handleSelect}>
+
+                                                                        {item.label}
+
+                                                                    </div>
+
+                                                                </template>
+
+                                                            </div>
+                                                        </template>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <!-- Remove -->
+                                                <div class="slds-col slds-size_1-of-12 slds-m-top_large">
+                                                    <template if:true={index}>
+                                                        <lightning-button-icon icon-name="utility:close"
+                                                            alternative-text="Remove" data-id={row.id}
+                                                            onclick={handleRemoveQueueRow}>
+                                                        </lightning-button-icon>
+                                                    </template>
+                                                </div>
+
+                                            </div>
+
+                                        </template>
+
+                                        <a href="javascript:void(0);" onclick={handleAddQueueRow}>
+                                            + Add Row
+                                        </a>
+
+                                    </div>
+
+                                    <!-- FILTER SECTION -->
+                                    <div class="slds-p-around_medium slds-border_top">
+
+                                        <div class="slds-text-title_bold slds-m-bottom_x-small">
+                                            Filter (Optional)
+                                        </div>
+
+                                        <p class="slds-text-color_weak slds-m-bottom_medium">
+                                            You can add filter to limit which leads will be assigned.
+                                        </p>
+
+                                        <template for:each={filterRows} for:item="row">
+
+                                            <div key={row.id}
+                                                class="slds-grid slds-wrap slds-gutters slds-m-bottom_small slds-grid_vertical-align-end">
+
+                                                <!-- Object -->
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-input label="Object" value={selectedObject} disabled>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <!-- Field -->
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-combobox label="Field" options={fieldOptions}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <!-- Operator -->
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-combobox label="Operator" options={operatorOptions}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <!-- Value -->
+                                                <div class="slds-col slds-size_2-of-12">
+                                                    <lightning-input label="Value"></lightning-input>
+                                                </div>
+
+                                                <!-- Remove -->
+                                                <div class="slds-col slds-size_1-of-12 slds-m-top_large">
+                                                    <lightning-button-icon icon-name="utility:close"
+                                                        alternative-text="Remove" data-id={row.id}
+                                                        onclick={handleRemoveFilterRow}>
+                                                    </lightning-button-icon>
+                                                </div>
+
+                                            </div>
+
+                                        </template>
+
+                                        <a href="javascript:void(0);" onclick={handleAddFilterRow}>
+                                            + Add Row
+                                        </a>
+
+                                    </div>
+
+                                    <!-- ACTIONS -->
+                                    <div class="slds-p-around_medium slds-grid_align-left slds-gutters_small">
+
+                                        <lightning-button label="Save" variant="brand" onclick={handleSaveAssignment}>
+                                        </lightning-button>
+
+                                        <lightning-button label="Cancel" variant="neutral" class="slds-m-left_small"
+                                            onclick={handleCancelAssignment}>
+                                        </lightning-button>
+
+
+
+                                    </div>
+                                </div>
+                                    
+
+                            </lightning-card>
+
+                        </div>
+
+
+                    </template>
+
+                </div>
+            </div>
+            <div data-section="routerMemberList">
+                <div class="assignment-page slds-p-around_medium">
+                    <template if:true={showRouterMemberList}>
+                        <div class="assignment-card-container">
+                            <div>Router Members content</div>
+                            <lightning-card title="Router Members">
+                                <!-- <div class="slds-col slds-size_8-of-12">
+                                                <lightning-input type="search"
+                                                    placeholder="Search By Name..."></lightning-input>
+                                            </div> -->
+                                <div class="slds-grid slds-grid_vertical-align-center slds-p-around_small header-bar">
+
+                                    <!-- LEFT SIDE: SEARCH -->
+                                    <div class="slds-col slds-size_6-of-12">
+                                        <lightning-input type="search" placeholder="Search By Name..."
+                                            variant="label-hidden">
+                                        </lightning-input>
+                                    </div>
+
+                                    
+                                    <div class="slds-col slds-size_5-of-1 slds-text-align_right">
+
+                                        <div
+                                            class="slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-gutters_x-small">
+
+                                            
+                                            <lightning-button-icon icon-name="utility:settings" variant="bare"
+                                                alternative-text="Member Settings" title="Member Settings"
+                                                onclick={handleMemberSettings}>
+                                            </lightning-button-icon>
+
+                                            
+                                            <lightning-button-icon icon-name="utility:refresh" variant="bare"
+                                                alternative-text="Member Sync" title="Member Sync"
+                                                onclick={handleMemberSync}>
+                                            </lightning-button-icon>
+
+                                            
+                                            <span class="slds-text-body_regular slds-m-right_small">
+                                                Member Sync
+                                            </span>
+
+                                            
+                                            <lightning-button label="Manage Members" variant="brand"
+                                                onclick={handleManageMembers}>
+                                            </lightning-button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <lightning-datatable key-field="id" data={routerData} columns={columnsOfRouterMembers}
+                                    hide-checkbox-column show-row-number-column="false" onrowaction={handleRowAction}>
+                                </lightning-datatable>
+                                <lightning-button label="Save" variant="brand" class="slds-m-left_small">
+                                </lightning-button>
+                                <lightning-button label="Cancel" variant="neutral">
+                                </lightning-button>
+                            </lightning-card>
+
+                        </div>
+
+
+                    </template>
+                </div>
+            </div>
+
+        </template>
+
+
+
+
+    </div>
+
+</template>
